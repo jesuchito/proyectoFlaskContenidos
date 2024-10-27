@@ -1,0 +1,7 @@
+# flake8: noqa
+# import models into model package
+from openapi_server.models.contenido import Contenidos
+from openapi_server.models.episodios_inner import EpisodiosInner
+from openapi_server.models.get_temporadas200_response_inner import GetTemporadas200ResponseInner
+from openapi_server.models.get_temporadas200_response_inner_episodios_inner import GetTemporadas200ResponseInnerEpisodiosInner
+from openapi_server.models.temporadas_inner import TemporadasInner

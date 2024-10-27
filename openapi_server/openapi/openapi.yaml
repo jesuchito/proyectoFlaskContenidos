@@ -1,0 +1,759 @@
+openapi: 3.0.0
+info:
+  description: API para la gestión de contenidos multimedia que los usuarios pueden
+    consumir en la aplicación de tipo Netflix
+  title: Microservicio de Contenidos de una aplicación de tipo Netflix
+  version: 1.0.0
+servers:
+- url: /
+tags:
+- description: Representa uno de los productos multimedia que los usuarios pueden
+    consumir en la aplicación de tipo Netflix
+  name: contenido
+paths:
+  /contenido:
+    get:
+      description: Retorna el conjunto de los productos multimedia disponibles en
+        la aplicación para el usuario
+      operationId: get_all_contenido
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Contenido'
+                type: array
+            application/xml:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Contenido'
+                type: array
+          description: Se ha obtenido exitosamente la lista de contenidos multimedia
+        "500":
+          description: Error del servidor
+      summary: Obtener la lista de contenidos multimedia disponibles
+      tags:
+      - contenido
+      x-openapi-router-controller: openapi_server.controllers.contenido_controller
+    post:
+      description: Crea un nuevo producto multimedia que estará disponible en la aplicación
+        para los usuarios
+      operationId: add_contenido
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contenido'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Contenido'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contenido'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Contenido'
+          description: Contenido creado exitosamente
+        "400":
+          description: Entrada invalida
+        "422":
+          description: Excepción en la validación
+        "500":
+          description: Error del servidor
+      summary: Añadir un nuevo contenido a la aplicación
+      tags:
+      - contenido
+      x-openapi-router-controller: openapi_server.controllers.contenido_controller
+  /contenido/findByGenero/{genero}:
+    get:
+      description: Retorna una lista de contenidos multimedia en función del género
+        proporcionado
+      operationId: get_contenidos_by_genero
+      parameters:
+      - description: genero de los contenidos por el que se va a filtrar
+        explode: false
+        in: path
+        name: genero
+        required: true
+        schema:
+          default: horror
+          enum:
+          - horror
+          - aventura
+          - comedia
+          - thriller
+          - drama
+          - romance
+          - fantasia
+          - ciencia ficcion
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Contenido'
+                type: array
+            application/xml:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Contenido'
+                type: array
+          description: Se han obtenido exitosamente los contenidos del genero proporcionado
+        "400":
+          description: Género proporcionado inválido
+        "500":
+          description: Error del servidor
+      summary: Obtener una lista de contenidos de un genero especifico
+      tags:
+      - contenido
+      x-openapi-router-controller: openapi_server.controllers.contenido_controller
+  /contenido/findByTipo/{tipo}:
+    get:
+      description: Retorna una lista de contenidos multimedia en función del tipo
+        proporcionado
+      operationId: get_contenidos_by_tipo
+      parameters:
+      - description: tipo de los contenidos por el que se va a filtrar
+        explode: false
+        in: path
+        name: tipo
+        required: true
+        schema:
+          default: serie
+          enum:
+          - serie
+          - pelicula
+          - corto
+          - documental
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Contenido'
+                type: array
+            application/xml:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Contenido'
+                type: array
+          description: Se han obtenido exitosamente los contenidos del tipo proporcionado
+        "400":
+          description: Tipo proporcionado inválido
+        "500":
+          description: Error del servidor
+      summary: Obtener una lista de contenidos de un tipo especifico
+      tags:
+      - contenido
+      x-openapi-router-controller: openapi_server.controllers.contenido_controller
+  /contenido/findByTitulo/{titulo}:
+    get:
+      description: Retorna una lista de contenidos multimedia en función del título
+        proporcionado
+      operationId: get_contenidos_by_titulo
+      parameters:
+      - description: título de los contenidos por el que se va a filtrar
+        explode: false
+        in: path
+        name: titulo
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Contenido'
+                type: array
+            application/xml:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Contenido'
+                type: array
+          description: Se han obtenido exitosamente los contenidos por el titulo proporcionado
+        "400":
+          description: Titulo proporcionado inválido
+        "500":
+          description: Error del servidor
+      summary: Obtener una lista de contenidos por su titulo
+      tags:
+      - contenido
+      x-openapi-router-controller: openapi_server.controllers.contenido_controller
+  /contenido/{idContenido}:
+    delete:
+      description: Elimina un contenido multimedia específico de la aplicación en
+        función del identificador proporcionado
+      operationId: delete_contenido
+      parameters:
+      - description: ID del contenido a borrar
+        explode: false
+        in: path
+        name: idContenido
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          description: Contenido eliminado exitosamente
+        "400":
+          description: ID proporcionado inválido
+        "404":
+          description: Contenido no encontrado
+        "500":
+          description: Error del servidor
+      summary: Eliminar un contenido específico por su ID
+      tags:
+      - contenido
+      x-openapi-router-controller: openapi_server.controllers.contenido_controller
+    get:
+      description: Retorna la información de un contenido multimedia en función del
+        identificador proporcionado
+      operationId: get_contenido_by_id
+      parameters:
+      - description: ID del contenido a devolver
+        explode: false
+        in: path
+        name: idContenido
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contenido'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Contenido'
+          description: Se ha obtenido exitosamente los detalles del contenido
+        "400":
+          description: ID proporcionado inválido
+        "404":
+          description: Contenido no encontrado
+        "500":
+          description: Error del servidor
+      summary: Obtener un contenido específico por su ID
+      tags:
+      - contenido
+      x-openapi-router-controller: openapi_server.controllers.contenido_controller
+    put:
+      description: Actualiza la información de un contenido multimedia en función
+        del identificador proporcionado
+      operationId: update_contenido
+      parameters:
+      - description: ID del contenido a actualizar
+        explode: false
+        in: path
+        name: idContenido
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contenido'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Contenido'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contenido'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Contenido'
+          description: Se ha actualizado exitosamente los detalles del contenido
+        "400":
+          description: ID proporcionado inválido
+        "404":
+          description: Contenido no encontrado
+        "422":
+          description: Excepción en la validación
+        "500":
+          description: Error del servidor
+      summary: Actualizar un contenido específico por su ID
+      tags:
+      - contenido
+      x-openapi-router-controller: openapi_server.controllers.contenido_controller
+  /contenido/{idContenido}/Temporadas:
+    get:
+      description: Retorna el conjunto de temporadas de una serie en función del identificador
+        proporcionado
+      operationId: get_temporadas
+      parameters:
+      - description: ID del contenido del que se obtendrán sus temporadas
+        explode: false
+        in: path
+        name: idContenido
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/getTemporadas_200_response_inner'
+                type: array
+            application/xml:
+              schema:
+                items:
+                  $ref: '#/components/schemas/getTemporadas_200_response_inner'
+                type: array
+          description: Se ha obtenido exitosamente el listado de temporadas de la
+            serie
+        "400":
+          description: ID proporcionado inválido
+        "500":
+          description: Error del servidor
+      summary: Obtener el listado de temporadas de una serie por su ID
+      tags:
+      - contenido
+      x-openapi-router-controller: openapi_server.controllers.contenido_controller
+    post:
+      description: Añade una nueva temporada a una serie en función del identificador
+        proporcionado
+      operationId: add_temporada
+      parameters:
+      - description: ID del contenido al que se le añadirá una nueva temporada
+        explode: false
+        in: path
+        name: idContenido
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/getTemporadas_200_response_inner'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/getTemporadas_200_response_inner'
+        required: true
+      responses:
+        "200":
+          description: Temporada creada exitosamente
+        "400":
+          description: Entrada invalida
+        "422":
+          description: Excepción en la validación
+        "500":
+          description: Error del servidor
+      summary: Añadir una nueva temporada a una serie por su ID
+      tags:
+      - contenido
+      x-openapi-router-controller: openapi_server.controllers.contenido_controller
+  /contenido/{idContenido}/{numeroTemporada}/ListaEpisodios:
+    get:
+      description: Retorna el conjunto de episodios de la temporada especificada por
+        su número de una serie en función del identificador proporcionado
+      operationId: get_episodios
+      parameters:
+      - description: ID del contenido del que se obtendrán sus episodios
+        explode: false
+        in: path
+        name: idContenido
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      - description: número de la temporada de la que se obtendrán sus episodios
+        explode: false
+        in: path
+        name: numeroTemporada
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/getTemporadas_200_response_inner_episodios_inner'
+                type: array
+            application/xml:
+              schema:
+                items:
+                  $ref: '#/components/schemas/getTemporadas_200_response_inner_episodios_inner'
+                type: array
+          description: Se ha obtenido exitosamente el listado de episodios de una
+            temporada concreta
+        "400":
+          description: ID y/o numeroTemporada proporcionados inválidos
+        "500":
+          description: Error del servidor
+      summary: Obtener el listado de episodios de una determinada temporada de una
+        serie por su ID
+      tags:
+      - contenido
+      x-openapi-router-controller: openapi_server.controllers.contenido_controller
+    post:
+      description: Añade un nuevo episodio a la temporada especificada por su número
+        de una serie en función del identificador proporcionado
+      operationId: add_episodio
+      parameters:
+      - description: ID del contenido al que se le añadirá un nuevo episodio
+        explode: false
+        in: path
+        name: idContenido
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      - description: número de la temporada a la que se le añadirá un nuevo episodio
+        explode: false
+        in: path
+        name: numeroTemporada
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/getTemporadas_200_response_inner_episodios_inner'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/getTemporadas_200_response_inner_episodios_inner'
+        required: true
+      responses:
+        "200":
+          description: Episodio creado exitosamente
+        "400":
+          description: Entrada invalida
+        "422":
+          description: Excepción en la validación
+        "500":
+          description: Error del servidor
+      summary: Añadir un nuevo episodio a una determinada temporada de una serie por
+        su ID
+      tags:
+      - contenido
+      x-openapi-router-controller: openapi_server.controllers.contenido_controller
+  /contenido/{idContenido}/{numeroTemporada}/{numeroEpisodio}:
+    get:
+      description: Obtiene un episodio especificado por su número de la temporada
+        especificada a su vez por su propio número de una serie en función del identificador
+        proporcionado
+      operationId: get_episodio
+      parameters:
+      - description: ID del contenido del que se obtendrá el episodio
+        explode: false
+        in: path
+        name: idContenido
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      - description: número de la temporada de la que se obtendrá el episodio
+        explode: false
+        in: path
+        name: numeroTemporada
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      - description: número del episodio que se obtendrá
+        explode: false
+        in: path
+        name: numeroEpisodio
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getTemporadas_200_response_inner_episodios_inner'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/getTemporadas_200_response_inner_episodios_inner'
+          description: Se ha obtenido correctamente el episodio indicado
+        "400":
+          description: "ID, numeroTemporada y/o numeroEpisodio proporcionados invá\
+            lidos"
+        "500":
+          description: Error del servidor
+      summary: Obtener un determinado episodio de una determinada temporada de una
+        serie por su ID
+      tags:
+      - contenido
+      x-openapi-router-controller: openapi_server.controllers.contenido_controller
+components:
+  schemas:
+    Contenido:
+      example:
+        tipo: serie
+        temporadas:
+        - episodios:
+          - tituloEpisodio: Celebration
+            numeroEpisodio: 5
+            duracionEpisodio: 60
+          - tituloEpisodio: Celebration
+            numeroEpisodio: 5
+            duracionEpisodio: 60
+          numeroTemporada: 1
+        - episodios:
+          - tituloEpisodio: Celebration
+            numeroEpisodio: 5
+            duracionEpisodio: 60
+          - tituloEpisodio: Celebration
+            numeroEpisodio: 5
+            duracionEpisodio: 60
+          numeroTemporada: 1
+        idContenido: 10
+        director: Mark Mylod
+        elenco: "Brian Cox, Jeremy Strong, Sarah Snook, Kieran Culkin, Hiam Abbass"
+        genero: drama
+        titulo: Succession
+        duracion: 120
+        imagen:
+        - imagen
+        - imagen
+        sinopsis: Familia de ricos
+      properties:
+        idContenido:
+          description: Identificador único del contenido
+          example: 10
+          title: idContenido
+          type: integer
+        titulo:
+          description: Nombre del contenido
+          example: Succession
+          title: titulo
+          type: string
+        tipo:
+          description: "Categoría multimedia a la cual pertenece el contenido (Pelí\
+            cula, documental, serie…)"
+          enum:
+          - serie
+          - pelicula
+          - corto
+          - documental
+          example: serie
+          title: tipo
+          type: string
+        sinopsis:
+          description: Resumen general e información referente al contenido
+          example: Familia de ricos
+          title: sinopsis
+          type: string
+        duracion:
+          description: Intervalo de tiempo en minutos que transcurre entre el comienzo
+            y el fin del contenido
+          example: 120
+          title: duracion
+          type: integer
+        temporadas:
+          description: "Conjunto de temporadas que conforman la serie (solo en el\
+            \ caso de que el contenido sea de tipo serie. Si el contenido no es de\
+            \ tipo serie este array estará vacío y no contendrá información útil).\
+            \ Este atributo se ha definido como un array de objetos, en el cual cada\
+            \ posición almacenará la información referente a una temporada, es decir,\
+            \ numeroTemporada y episodios"
+          items:
+            $ref: '#/components/schemas/Temporadas_inner'
+          title: temporadas
+          type: array
+        genero:
+          description: "Temática en la que puede clasificarse el contenido multimedia\
+            \ (Horror, comedia, romance, fantasía…)"
+          enum:
+          - horror
+          - aventura
+          - comedia
+          - thriller
+          - drama
+          - romance
+          - fantasia
+          - ciencia ficcion
+          example: drama
+          title: genero
+          type: string
+        director:
+          description: Responsable principal encargado de dirigir la filmación o rodaje
+            del contenido en términos artísticos
+          example: Mark Mylod
+          title: director
+          type: string
+        elenco:
+          description: "Conjunto de personas, normalmente los actores y actrices principales,\
+            \ que han participado en la producción y grabación del contenido"
+          example: "Brian Cox, Jeremy Strong, Sarah Snook, Kieran Culkin, Hiam Abbass"
+          items:
+            type: string
+          title: elenco
+          type: array
+        imagen:
+          description: Fotografía representativa del contenido multimedia
+          items:
+            type: string
+          title: imagen
+          type: array
+          xml:
+            wrapped: true
+      title: Contenido
+      type: object
+    Temporadas:
+      description: "Conjunto de temporadas que conforman la serie (solo en el caso\
+        \ de que el contenido sea de tipo serie. Si el contenido no es de tipo serie\
+        \ este array estará vacío y no contendrá información útil). Este atributo\
+        \ se ha definido como un array de objetos, en el cual cada posición almacenará\
+        \ la información referente a una temporada, es decir, numeroTemporada y episodios"
+      items:
+        $ref: '#/components/schemas/Temporadas_inner'
+      title: temporadas
+      type: array
+    Episodios:
+      description: "Listado de episodios que conforman la temporada a la que se está\
+        \ accediendo en el array. Este atributo se ha definido como un array de objetos,\
+        \ en el cual cada posición almacenará la información referente a un episodio\
+        \ de la temporada actual, es decir, numeroEpisodio, tituloEpisodio y duracionEpisodio"
+      items:
+        $ref: '#/components/schemas/Episodios_inner'
+      title: Episodios
+      type: array
+    getTemporadas_200_response_inner_episodios_inner:
+      example:
+        tituloEpisodio: tituloEpisodio
+        numeroEpisodio: 6
+        duracionEpisodio: 1
+      properties:
+        numeroEpisodio:
+          description: Identifica el número del episodio en la temporada a la que
+            se está accediendo
+          title: numeroEpisodio
+          type: integer
+        tituloEpisodio:
+          description: Nombre del episodio
+          title: tituloEpisodio
+          type: string
+        duracionEpisodio:
+          description: Intervalo de tiempo en minutos que transcurre entre el comienzo
+            y el fin del episodio
+          title: duracionEpisodio
+          type: integer
+      title: getTemporadas_200_response_inner_episodios_inner
+      type: object
+    getTemporadas_200_response_inner:
+      example:
+        episodios:
+        - tituloEpisodio: tituloEpisodio
+          numeroEpisodio: 6
+          duracionEpisodio: 1
+        - tituloEpisodio: tituloEpisodio
+          numeroEpisodio: 6
+          duracionEpisodio: 1
+        numeroTemporada: 0
+      properties:
+        numeroTemporada:
+          description: Identifica el número del episodio en la temporada a la que
+            se está accediendo
+          title: numeroTemporada
+          type: integer
+        episodios:
+          description: Listado de episodios que conforman la temporada a la que se
+            está accediendo en el array
+          items:
+            $ref: '#/components/schemas/getTemporadas_200_response_inner_episodios_inner'
+          title: episodios
+          type: array
+      title: getTemporadas_200_response_inner
+      type: object
+    Temporadas_inner:
+      example:
+        episodios:
+        - tituloEpisodio: Celebration
+          numeroEpisodio: 5
+          duracionEpisodio: 60
+        - tituloEpisodio: Celebration
+          numeroEpisodio: 5
+          duracionEpisodio: 60
+        numeroTemporada: 1
+      properties:
+        numeroTemporada:
+          description: Identifica el número de la temporada almacenada en la posición
+            actual del array
+          example: 1
+          title: numeroTemporada
+          type: integer
+        episodios:
+          description: "Listado de episodios que conforman la temporada a la que se\
+            \ está accediendo en el array. Este atributo se ha definido como un array\
+            \ de objetos, en el cual cada posición almacenará la información referente\
+            \ a un episodio de la temporada actual, es decir, numeroEpisodio, tituloEpisodio\
+            \ y duracionEpisodio"
+          items:
+            $ref: '#/components/schemas/Episodios_inner'
+          title: Episodios
+          type: array
+      title: Temporadas_inner
+      type: object
+    Episodios_inner:
+      example:
+        tituloEpisodio: Celebration
+        numeroEpisodio: 5
+        duracionEpisodio: 60
+      properties:
+        numeroEpisodio:
+          description: Identifica el número del episodio en la temporada a la que
+            se está accediendo
+          example: 5
+          title: numeroEpisodio
+          type: integer
+        tituloEpisodio:
+          description: Nombre del episodio
+          example: Celebration
+          title: tituloEpisodio
+          type: string
+        duracionEpisodio:
+          description: Intervalo de tiempo en minutos que transcurre entre el comienzo
+            y el fin del episodio
+          example: 60
+          title: duracionEpisodio
+          type: integer
+      title: Episodios_inner
+      type: object

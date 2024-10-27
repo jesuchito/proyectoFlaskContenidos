@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Contenidos {% endblock %}</h1>
+    {% for content in contents %}
+        <div class='content'>
+            <h3>#{{ content[0] }} - {{ content[1] }} BY {{ content[2] }}</h3>
+            <i><p>({{ content[3] }} pages)</p></i>
+            <p class='review'>{{ content[4] }}</p>
+            <i><p>Added {{ content[5] }}</p></i>
+        </div>
+    {% endfor %}
+{% endblock %}
