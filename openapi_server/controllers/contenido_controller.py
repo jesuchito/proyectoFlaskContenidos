@@ -131,7 +131,7 @@ def get_contenido_by_id(id_contenido):  # noqa: E501
     """
     contenido = Contenidos.query.get_or_404(id_contenido)
     print(contenido)
-    contenido.to_dict()
+    contenido = contenido.to_dict()
     
     return jsonify(contenido)
 
