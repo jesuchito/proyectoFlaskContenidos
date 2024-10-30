@@ -9,7 +9,7 @@ from openapi_server.models.get_temporadas200_response_inner_episodios_inner impo
 from openapi_server import util
 
 from flask_sqlalchemy import SQLAlchemy
-from flask import jsonify, request
+from flask import jsonify, request, render_template, make_response
 
 # import psycopg2
 # conn = psycopg2.connect(host='localhost',
@@ -116,7 +116,9 @@ def get_all_contenido():  # noqa: E501
     print(contenidos)
     contenidos_dict = [contenido.to_dict() for contenido in contenidos]
     
-    return jsonify(contenidos_dict)
+    response = make_response(render_template('index.html', contenidos=contenidos_dict))
+    response.headers['Content-Type'] = 'text/html'
+    return response
 
 
 def get_contenido_by_id(id_contenido):  # noqa: E501
@@ -133,7 +135,9 @@ def get_contenido_by_id(id_contenido):  # noqa: E501
     print(contenido)
     contenido = contenido.to_dict()
     
-    return jsonify(contenido)
+    response = make_response(render_template("cont_view.html", contenido=contenido, idCont=id_contenido))
+    response.headers['Content-Type'] = 'text/html'
+    return response
 
 
 def get_contenidos_by_genero(genero):  # noqa: E501
@@ -150,7 +154,9 @@ def get_contenidos_by_genero(genero):  # noqa: E501
     print(contenidos)
     contenidos_dict = [contenido.to_dict() for contenido in contenidos]
     
-    return jsonify(contenidos_dict)
+    response = make_response(render_template('index.html', contenidos=contenidos_dict))
+    response.headers['Content-Type'] = 'text/html'
+    return response
 
 
 def get_contenidos_by_tipo(tipo):  # noqa: E501
@@ -167,7 +173,9 @@ def get_contenidos_by_tipo(tipo):  # noqa: E501
     print(contenidos)
     contenidos_dict = [contenido.to_dict() for contenido in contenidos]
     
-    return jsonify(contenidos_dict)
+    response = make_response(render_template('index.html', contenidos=contenidos_dict))
+    response.headers['Content-Type'] = 'text/html'
+    return response
 
 
 def get_contenidos_by_titulo(titulo):  # noqa: E501
@@ -184,7 +192,9 @@ def get_contenidos_by_titulo(titulo):  # noqa: E501
     print(contenidos)
     contenidos_dict = [contenido.to_dict() for contenido in contenidos]
     
-    return jsonify(contenidos_dict)
+    response = make_response(render_template('index.html', contenidos=contenidos_dict))
+    response.headers['Content-Type'] = 'text/html'
+    return response
 
 
 def get_episodio(id_contenido, numero_temporada, numero_episodio):  # noqa: E501

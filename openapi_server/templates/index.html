@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Netflix{% endblock %}
+
+{% block content %}
+    {% for contenido in contenidos %}
+        <div>
+            <h3>#{{ contenido.idcontenido }} - {{ contenido.titulo }}</h3>
+            <a href="http://127.0.0.1:5000/contenido/{{ contenido.idcontenido }}">Ver detalles </a>
+        </div>
+    {% endfor %}
+    <h3>Añadir contenido</h3>
+    <form action="" method="post">
+        <label for="name">Nombre: </label>
+        <input type="text" id="name" name="name" /><br>
+        <p>Tipo:</p>
+        <input type="radio" id="pelicula" name="tipo" value="pelicula">
+        <label for="pelicula">pelicula</label><br>
+        <input type="radio" id="serie" name="tipo" value="serie">
+        <label for="serie">serie</label><br>
+        <input type="radio" id="corto" name="tipo" value="corto">
+        <label for="corto">corto</label><br>
+        <input type="radio" id="documental" name="tipo" value="documental">
+        <label for="documental">documental</label><br>
+        <label for="sinopsis">Sinopsis: </label>
+        <input type="text" id="sinopsis" name="sinopsis" /><br>
+        <label for="duracion">Duracion: </label>
+        <input type="number" id="duracion" name="duracion" /><br>
+        <input type="submit" id="add" name="add" value="Crear" />
+    </form>
+{% endblock %}

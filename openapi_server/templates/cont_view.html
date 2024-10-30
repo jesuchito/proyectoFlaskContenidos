@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}{{ idCont }}{% endblock %}
+
+{% block content %}
+    Mostrando el contenido #{{ idCont }}
+    <div>
+        <h3>{{ contenido.titulo }}</h3>
+        <p>Tipo {{ contenido.tipo }}</p>
+        <i><p>({{ contenido.duracion }} minutos)</p></i>
+        <p>{{ contenido.sinopsis }}</p>
+        <i><p>Género: {{ contenido.genero }}</p></i>
+        <p>Director: {{ contenido.director }}</p>
+        <p>Elenco: {{ contenido.elenco }}</p>
+    </div>
+{% endblock %}

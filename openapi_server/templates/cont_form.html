@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Creación de contenidos{% endblock %}
+
+{% block content %}
+    <form action="" method="post">
+        <label for="name">Nombre: </label>
+        <input type="text" id="name" name="name" /><br>
+        <label for="">Tipo: </label>
+        <input type="" id="" name="" /><br>        
+        <label for="sinopsis">Sinopsis: </label>
+        <input type="text" id="sinopsis" name="sinopsis" /><br>
+        <label for="duracion">Duracion: </label>
+        <input type="number" id="duracion" name="duracion" /><br>
+        <input type="submit" id="add" name="add" value="Crear" />
+    </form>
+{% endblock %}
