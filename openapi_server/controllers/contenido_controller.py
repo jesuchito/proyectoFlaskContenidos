@@ -33,6 +33,24 @@ def add_contenido(contenido):  # noqa: E501
 
     :rtype: Union[Contenido, Tuple[Contenido, int], Tuple[Contenido, int, Dict[str, str]]
     """       
+    name = connexion.request.form['name']
+    tipo = connexion.request.form['tipo']
+    sinopsis = connexion.request.form['sinopsis']
+    duracion = connexion.request.form['duracion']
+    genero = connexion.request.form['genero']
+    director = connexion.request.form['director']
+    elenco = connexion.request.form['elenco']
+    
+    new_contenido = Contenidos(name, tipo, sinopsis, duracion, genero, director, elenco)
+    
+    db.session.add(new_contenido)
+    db.session.commit()
+    
+    response = make_response(render_template("cont_view.html", contenido=new_contenido, idCont=new_contenido.idcontenido))
+    response.headers['Content-Type'] = 'text/html'
+    return response
+    
+    
     # name = connexion.request.form['name']
     # tipo = connexion.request.form['tipo']
     # sinopsis = connexion.request.form['sinopsis']
