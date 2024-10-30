@@ -24,6 +24,10 @@ class Contenidos(db.Model):
     tipo = db.Column(db.String(50), nullable=False)
     sinopsis = db.Column(db.Text, nullable=False)
     duracion = db.Column(db.Integer, nullable=False)
+    genero = db.Column(db.String(50), nullable=False)
+    director = db.Column(db.String(255), nullable=False)
+    elenco = db.Column(db.Text, nullable=False)
+    imagen = db.Column(db.Text, nullable=False)
 
     def repr(self):
         return f'<Contenido {self.titulo}>'
@@ -34,7 +38,11 @@ class Contenidos(db.Model):
             "titulo": self.titulo,
             "tipo": self.tipo,
             "sinopsis": self.sinopsis,
-            "duracion": self.duracion
+            "duracion": self.duracion,
+            "genero": self.genero,
+            "director": self.director,
+            "elenco": self.elenco,
+            "imagen": self.imagen
         }
     
 # class Contenido(Model):

@@ -146,7 +146,11 @@ def get_contenidos_by_genero(genero):  # noqa: E501
 
     :rtype: Union[List[Contenido], Tuple[List[Contenido], int], Tuple[List[Contenido], int, Dict[str, str]]
     """
-    return 'do some magic!'
+    contenidos = Contenidos.query.filter_by(genero=genero).all()
+    print(contenidos)
+    contenidos_dict = [contenido.to_dict() for contenido in contenidos]
+    
+    return jsonify(contenidos_dict)
 
 
 def get_contenidos_by_tipo(tipo):  # noqa: E501
@@ -159,7 +163,11 @@ def get_contenidos_by_tipo(tipo):  # noqa: E501
 
     :rtype: Union[List[Contenido], Tuple[List[Contenido], int], Tuple[List[Contenido], int, Dict[str, str]]
     """
-    return 'do some magic!'
+    contenidos = Contenidos.query.filter_by(tipo=tipo).all()
+    print(contenidos)
+    contenidos_dict = [contenido.to_dict() for contenido in contenidos]
+    
+    return jsonify(contenidos_dict)
 
 
 def get_contenidos_by_titulo(titulo):  # noqa: E501
@@ -172,7 +180,11 @@ def get_contenidos_by_titulo(titulo):  # noqa: E501
 
     :rtype: Union[List[Contenido], Tuple[List[Contenido], int], Tuple[List[Contenido], int, Dict[str, str]]
     """
-    return 'do some magic!'
+    contenidos = Contenidos.query.filter_by(titulo=titulo).all()
+    print(contenidos)
+    contenidos_dict = [contenido.to_dict() for contenido in contenidos]
+    
+    return jsonify(contenidos_dict)
 
 
 def get_episodio(id_contenido, numero_temporada, numero_episodio):  # noqa: E501
