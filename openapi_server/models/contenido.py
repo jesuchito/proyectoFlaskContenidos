@@ -1,18 +1,8 @@
-from datetime import date, datetime  # noqa: F401
-
-from typing import List, Dict  # noqa: F401
-
-from openapi_server.models.base_model import Model
-from openapi_server.models.temporadas_inner import TemporadasInner
-from openapi_server import util
-
-from openapi_server.models.temporadas_inner import TemporadasInner  # noqa: E501
-
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-def import_db_model(database):
+def import_db_cont(database):
     global db
     db = database
     
@@ -30,7 +20,7 @@ class Contenidos(db.Model):
     imagen = db.Column(db.Text, nullable=False)
 
     def repr(self):
-        return f'<Contenido {self.titulo}>'
+        return f'<Contenido: {self.titulo}>'
     
     def to_dict(self):
         return {

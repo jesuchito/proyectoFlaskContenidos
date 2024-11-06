@@ -1,21 +1,11 @@
 import connexion
-from typing import Dict
-from typing import Tuple
-from typing import Union
 
-from openapi_server.models.contenido import Contenidos  # noqa: E501
-from openapi_server.models.get_temporadas200_response_inner import GetTemporadas200ResponseInner  # noqa: E501
-from openapi_server.models.get_temporadas200_response_inner_episodios_inner import GetTemporadas200ResponseInnerEpisodiosInner  # noqa: E501
-from openapi_server import util
+from openapi_server.models.contenido import Contenidos
+from openapi_server.models.episodios import Episodios
+from openapi_server.models.temporadas import Temporadas
 
 from flask_sqlalchemy import SQLAlchemy
 from flask import jsonify, request, render_template, make_response
-
-# import psycopg2
-# conn = psycopg2.connect(host='localhost',
-#                         database='Contenidos',
-#                         user='postgres',
-#                         password='12345')
 
 db = SQLAlchemy()
 
@@ -46,31 +36,7 @@ def add_contenido(contenido):  # noqa: E501
     db.session.add(new_contenido)
     db.session.commit()
     
-    response = make_response(render_template("cont_view.html", contenido=new_contenido, idCont=new_contenido.idcontenido))
-    response.headers['Content-Type'] = 'text/html'
-    return response
-    
-    
-    # name = connexion.request.form['name']
-    # tipo = connexion.request.form['tipo']
-    # sinopsis = connexion.request.form['sinopsis']
-    # duracion = connexion.request.form['duracion']
-    # print(name, tipo, sinopsis, duracion)
-    # try:
-    #     cur = conn.cursor()
-    #     consulta = "INSERT INTO contenidos (titulo, tipo, sinopsis, duracion) VALUES(%s, %s, %s, %s) RETURNING idContenido"
-    #     cur.execute(consulta, [name, tipo, sinopsis, duracion])
-    #     conn.commit()
-    #     cont_id = cur.fetchone()[0]
-    #     cur.close()
-    # except psycopg2.DatabaseError as error:
-    #     print("Error. No se ha podido insertar el Servidor")
-    #     print(error)
-    # return ("insertado el id: "+str(cont_id))
-    if connexion.request.is_json:
-        contenido = Contenidos.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
-
+    return new_contenido.to_dict
 
 def add_episodio(id_contenido, numero_temporada, get_temporadas200_response_inner_episodios_inner):  # noqa: E501
     """Añadir un nuevo episodio a una determinada temporada de una serie por su ID
@@ -86,9 +52,16 @@ def add_episodio(id_contenido, numero_temporada, get_temporadas200_response_inne
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    if connexion.request.is_json:
-        get_temporadas200_response_inner_episodios_inner = GetTemporadas200ResponseInnerEpisodiosInner.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    numero = connexion.request.form['numero']
+    titulo = connexion.request.form['titulo']
+    duracion = connexion.request.form['duracion']
+    
+    new_episodio = Episodios(numero_temporada, numero, titulo, duracion)
+    
+    db.session.add(new_episodio)
+    db.session.commit()
+    
+    return new_episodio.to_dict
 
 
 def add_temporada(id_contenido, get_temporadas200_response_inner):  # noqa: E501
@@ -103,9 +76,14 @@ def add_temporada(id_contenido, get_temporadas200_response_inner):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    if connexion.request.is_json:
-        get_temporadas200_response_inner = GetTemporadas200ResponseInner.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    numero = connexion.request.form['numero']
+    
+    new_temporada = Temporadas(id_contenido, numero)
+    
+    db.session.add(new_temporada)
+    db.session.commit()
+    
+    return new_temporada.to_dict
 
 
 def delete_contenido(id_contenido):  # noqa: E501
@@ -118,7 +96,10 @@ def delete_contenido(id_contenido):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    contenido = Contenidos.query.get_or_404(id_contenido)
+    db.session.delete(contenido)
+    db.session.commit()
+    return jsonify({'message': 'contenido eliminado correctamente'})
 
 
 def get_all_contenido():  # noqa: E501
@@ -133,10 +114,8 @@ def get_all_contenido():  # noqa: E501
     contenidos = Contenidos.query.all()
     print(contenidos)
     contenidos_dict = [contenido.to_dict() for contenido in contenidos]
-    
-    response = make_response(render_template('index.html', contenidos=contenidos_dict))
-    response.headers['Content-Type'] = 'text/html'
-    return response
+
+    return contenidos_dict
 
 
 def get_contenido_by_id(id_contenido):  # noqa: E501
@@ -152,10 +131,8 @@ def get_contenido_by_id(id_contenido):  # noqa: E501
     contenido = Contenidos.query.get_or_404(id_contenido)
     print(contenido)
     contenido = contenido.to_dict()
-    
-    response = make_response(render_template("cont_view.html", contenido=contenido, idCont=id_contenido))
-    response.headers['Content-Type'] = 'text/html'
-    return response
+
+    return contenido
 
 
 def get_contenidos_by_genero(genero):  # noqa: E501
@@ -171,10 +148,8 @@ def get_contenidos_by_genero(genero):  # noqa: E501
     contenidos = Contenidos.query.filter_by(genero=genero).all()
     print(contenidos)
     contenidos_dict = [contenido.to_dict() for contenido in contenidos]
-    
-    response = make_response(render_template('index.html', contenidos=contenidos_dict))
-    response.headers['Content-Type'] = 'text/html'
-    return response
+
+    return contenidos_dict
 
 
 def get_contenidos_by_tipo(tipo):  # noqa: E501
@@ -190,10 +165,8 @@ def get_contenidos_by_tipo(tipo):  # noqa: E501
     contenidos = Contenidos.query.filter_by(tipo=tipo).all()
     print(contenidos)
     contenidos_dict = [contenido.to_dict() for contenido in contenidos]
-    
-    response = make_response(render_template('index.html', contenidos=contenidos_dict))
-    response.headers['Content-Type'] = 'text/html'
-    return response
+
+    return contenidos_dict
 
 
 def get_contenidos_by_titulo(titulo):  # noqa: E501
@@ -210,9 +183,7 @@ def get_contenidos_by_titulo(titulo):  # noqa: E501
     print(contenidos)
     contenidos_dict = [contenido.to_dict() for contenido in contenidos]
     
-    response = make_response(render_template('index.html', contenidos=contenidos_dict))
-    response.headers['Content-Type'] = 'text/html'
-    return response
+    return contenidos_dict
 
 
 def get_episodio(id_contenido, numero_temporada, numero_episodio):  # noqa: E501
@@ -229,7 +200,13 @@ def get_episodio(id_contenido, numero_temporada, numero_episodio):  # noqa: E501
 
     :rtype: Union[GetTemporadas200ResponseInnerEpisodiosInner, Tuple[GetTemporadas200ResponseInnerEpisodiosInner, int], Tuple[GetTemporadas200ResponseInnerEpisodiosInner, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    temporada = Temporadas.query.filter_by(numerotemporada=numero_temporada, idcontenido=id_contenido).first()
+    
+    episodio = Episodios.query.filter_by(numeroepisodio=numero_episodio, idtemporada=temporada.idtemporada).first()
+    
+    episodio = episodio.to_dict()
+
+    return episodio
 
 
 def get_episodios(id_contenido, numero_temporada):  # noqa: E501
@@ -244,8 +221,13 @@ def get_episodios(id_contenido, numero_temporada):  # noqa: E501
 
     :rtype: Union[List[GetTemporadas200ResponseInnerEpisodiosInner], Tuple[List[GetTemporadas200ResponseInnerEpisodiosInner], int], Tuple[List[GetTemporadas200ResponseInnerEpisodiosInner], int, Dict[str, str]]
     """
-    return 'do some magic!'
+    temporada = Temporadas.query.filter_by(numerotemporada=numero_temporada, idcontenido=id_contenido).first()
 
+    episodios = Episodios.query.filter_by(idtemporada = temporada.idtemporada).all()
+    
+    episodios_dict = [episodio.to_dict() for episodio in episodios]
+    
+    return episodios_dict
 
 def get_temporadas(id_contenido):  # noqa: E501
     """Obtener el listado de temporadas de una serie por su ID
@@ -257,7 +239,11 @@ def get_temporadas(id_contenido):  # noqa: E501
 
     :rtype: Union[List[GetTemporadas200ResponseInner], Tuple[List[GetTemporadas200ResponseInner], int], Tuple[List[GetTemporadas200ResponseInner], int, Dict[str, str]]
     """
-    return 'do some magic!'
+    temporadas = Temporadas.query.filter_by(idcontenido=id_contenido).all()
+    
+    temporadas_dict = [temporada.to_dict() for temporada in temporadas]
+    
+    return temporadas_dict
 
 
 def update_contenido(id_contenido, contenido):  # noqa: E501
@@ -272,6 +258,18 @@ def update_contenido(id_contenido, contenido):  # noqa: E501
 
     :rtype: Union[Contenido, Tuple[Contenido, int], Tuple[Contenido, int, Dict[str, str]]
     """
-    if connexion.request.is_json:
-        contenido = Contenidos.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    
+    cont = Contenidos.query.get_or_404(id_contenido)
+    
+    cont.titulo = connexion.request.form['name']
+    cont.tipo = connexion.request.form['tipo']
+    cont.sinopsis = connexion.request.form['sinopsis']
+    cont.duracion = connexion.request.form['duracion']
+    cont.genero = connexion.request.form['genero']
+    cont.director = connexion.request.form['director']
+    cont.elenco = connexion.request.form['elenco']
+    cont.imagen = connexion.request.form['imagen']
+    
+    db.session.commit()
+    return jsonify({'message': 'contenido actualizado correctamente'})
+
