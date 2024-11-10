@@ -13,7 +13,16 @@ def import_db_controller(database):
     global db
     db = database
 
-def add_contenido(contenido):  # noqa: E501
+''' Funciones de los diferentes tipos de contenidos '''
+
+def  contenido_Serie():
+    
+    
+    
+    return "IS MAGIX"
+
+
+def add_contenido():  # noqa: E501
     """Añadir un nuevo contenido a la aplicación
 
     Crea un nuevo producto multimedia que estará disponible en la aplicación para los usuarios # noqa: E501
@@ -23,20 +32,58 @@ def add_contenido(contenido):  # noqa: E501
 
     :rtype: Union[Contenido, Tuple[Contenido, int], Tuple[Contenido, int, Dict[str, str]]
     """       
-    name = connexion.request.form['name']
-    tipo = connexion.request.form['tipo']
-    sinopsis = connexion.request.form['sinopsis']
-    duracion = connexion.request.form['duracion']
-    genero = connexion.request.form['genero']
-    director = connexion.request.form['director']
-    elenco = connexion.request.form['elenco']
+    try:
+    # Obtener los datos de la solicitud JSON
+        data = connexion.request.get_json()
+        if not data:
+            return {"error": "No data provided"}, 400  # Código 400: No se proporcionaron datos
     
-    new_contenido = Contenidos(name, tipo, sinopsis, duracion, genero, director, elenco)
-    
-    db.session.add(new_contenido)
-    db.session.commit()
-    
-    return new_contenido.to_dict
+    # Verificar que todos los campos requeridos están presentes
+        required_fields = ['titulo', 'tipo', 'sinopsis', 'duracion', 'genero', 'director', 'elenco']
+        for field in required_fields:
+            if field not in data:
+                return {"error": f"Missing field: {field}"}, 422  # Código 422: Falta un campo requerido
+
+    # Validar los valores de 'tipo' y 'genero' (comprobamos si son válidos)
+        valid_types = ['serie', 'pelicula', 'corto', 'documental']
+        if data['tipo'] not in valid_types:
+            return {"error": "Invalid tipo. Valid types are: serie, pelicula, corto, documental"}, 422  # Código 422: Tipo no válido
+
+        valid_genres = ['horror', 'aventura', 'comedia', 'thriller', 'drama', 'romance', 'fantasia', 'ciencia ficcion']
+        if data['genero'] not in valid_genres:
+            return {"error": "Invalid genero. Valid genres are: horror, aventura, comedia, thriller, drama, romance, fantasia, ciencia ficcion"}, 422  # Código 422: Género no válido
+
+        # Asignar los valores de los campos
+        titulo = data['titulo']
+        tipo = data['tipo']
+        sinopsis = data['sinopsis']
+        duracion = data['duracion']
+        genero = data['genero']
+        director = data['director']
+        elenco = data['elenco']
+
+        # Crear el nuevo contenido
+        new_contenido = Contenidos(
+            titulo=titulo, 
+            tipo=tipo, 
+            sinopsis=sinopsis, 
+            duracion=duracion, 
+            genero=genero, 
+            director=director, 
+            elenco=elenco,
+            )
+
+    # Guardar el contenido en la base de datos
+        db.session.add(new_contenido)
+        db.session.commit()
+
+    # Retornar el contenido creado como diccionario
+        return new_contenido.to_dict(), 200  # Código 200: Contenido creado exitosamente
+
+    except Exception as e:
+    # En caso de error, retornar un mensaje con detalles
+        return {"error": f"An error occurred: {str(e)}"}, 500  # Código 500: Error del servidor
+
 
 def add_episodio(id_contenido, numero_temporada, get_temporadas200_response_inner_episodios_inner):  # noqa: E501
     """Añadir un nuevo episodio a una determinada temporada de una serie por su ID
@@ -96,10 +143,35 @@ def delete_contenido(id_contenido):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    contenido = Contenidos.query.get_or_404(id_contenido)
-    db.session.delete(contenido)
-    db.session.commit()
-    return jsonify({'message': 'contenido eliminado correctamente'})
+    try:
+        # Asegurarse de que el ID proporcionado es un número entero
+        id_contenido = int(id_contenido)
+        
+        # Buscar el contenido en la base de datos
+        contenido = db.session.query(Contenidos).get(id_contenido)
+        
+        if contenido is None:
+            # Si el contenido no se encuentra, devolver un error 404
+            return jsonify({'error': 'Contenido no encontrado'}), 404
+
+        # Eliminar el contenido de la sesión actual si estaba en otra sesión
+        db.session.expunge(contenido)
+        
+        # Eliminar el contenido de la base de datos
+        db.session.delete(contenido)
+        db.session.commit()
+
+        # Confirmar que el contenido fue eliminado correctamente
+        return jsonify({'message': 'contenido eliminado correctamente'}), 200
+
+
+    except ValueError:
+        # Devolver un error 400 si el ID proporcionado no es un número entero
+        return jsonify({'error': 'ID inválido, debe ser un número entero'}), 400
+
+    except Exception as e:
+        # Capturar cualquier otro error y devolver un error 500 con detalles adicionales
+        return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500
 
 
 def get_all_contenido():  # noqa: E501
@@ -246,7 +318,7 @@ def get_temporadas(id_contenido):  # noqa: E501
     return temporadas_dict
 
 
-def update_contenido(id_contenido, contenido):  # noqa: E501
+def update_contenido(id_contenido):  # noqa: E501
     """Actualizar un contenido específico por su ID
 
     Actualiza la información de un contenido multimedia en función del identificador proporcionado # noqa: E501
@@ -258,18 +330,41 @@ def update_contenido(id_contenido, contenido):  # noqa: E501
 
     :rtype: Union[Contenido, Tuple[Contenido, int], Tuple[Contenido, int, Dict[str, str]]
     """
-    
-    cont = Contenidos.query.get_or_404(id_contenido)
-    
-    cont.titulo = connexion.request.form['name']
-    cont.tipo = connexion.request.form['tipo']
-    cont.sinopsis = connexion.request.form['sinopsis']
-    cont.duracion = connexion.request.form['duracion']
-    cont.genero = connexion.request.form['genero']
-    cont.director = connexion.request.form['director']
-    cont.elenco = connexion.request.form['elenco']
-    cont.imagen = connexion.request.form['imagen']
-    
-    db.session.commit()
-    return jsonify({'message': 'contenido actualizado correctamente'})
+    try:
+        # Convertir id_contenido a entero (esto asegura que el parámetro sea un número válido)
+        id_contenido = int(id_contenido)
 
+        # Obtener los datos de la solicitud JSON
+        data = connexion.request.get_json()
+        if not data:
+            return {"error": "No data provided"}, 400  # Código 400: No se proporcionaron datos
+        
+        # Buscar el contenido por ID
+        cont = Contenidos.query.get_or_404(id_contenido)
+
+        # Actualizar solo los campos que fueron enviados en el cuerpo de la solicitud
+        if 'titulo' in data:
+            cont.titulo = data['titulo']
+        if 'tipo' in data:
+            cont.tipo = data['tipo']
+        if 'sinopsis' in data:
+            cont.sinopsis = data['sinopsis']
+        if 'duracion' in data:
+            cont.duracion = data['duracion']
+        if 'genero' in data:
+            cont.genero = data['genero']  # Actualización solo si 'genero' está presente en los datos
+        if 'director' in data:
+            cont.director = data['director']
+        if 'elenco' in data:
+            cont.elenco = data['elenco']
+        if 'imagen' in data:
+            cont.imagen = data['imagen']
+
+        # Guardar los cambios en la base de datos
+        db.session.commit()
+        # Retornar el contenido actualizado como diccionario
+        return cont.to_dict(), 200  # Código 200: Contenido actualizado exitosamente
+
+    except Exception as e:
+        # Otro tipo de error
+        return {"error": f"An error occurred: {str(e)}"}, 500  # Código 500: Error del servidor
