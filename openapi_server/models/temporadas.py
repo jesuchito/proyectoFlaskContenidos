@@ -10,7 +10,7 @@ class Temporadas(db.Model):
     tablename = 'temporadas'
     
     idtemporada = db.Column(db.Integer, primary_key=True)
-    idcontenido = db.Column(db.Integer, db.ForeignKey('contenidos.idcontenido'), nullable=False)
+    idcontenido = db.Column(db.Integer, nullable=False)
     numerotemporada = db.Column(db.Integer, nullable=False)
     
     def repr(self):

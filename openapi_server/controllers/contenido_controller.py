@@ -13,14 +13,6 @@ def import_db_controller(database):
     global db
     db = database
 
-''' Funciones de los diferentes tipos de contenidos '''
-
-def  contenido_Serie():
-    
-    
-    
-    return "IS MAGIX"
-
 
 def add_contenido():  # noqa: E501
     """Añadir un nuevo contenido a la aplicación
@@ -85,7 +77,7 @@ def add_contenido():  # noqa: E501
         return {"error": f"An error occurred: {str(e)}"}, 500  # Código 500: Error del servidor
 
 
-def add_episodio(id_contenido, numero_temporada, get_temporadas200_response_inner_episodios_inner):  # noqa: E501
+def add_episodio(id_contenido, numero_temporada):  # noqa: E501
     """Añadir un nuevo episodio a una determinada temporada de una serie por su ID
 
     Añade un nuevo episodio a la temporada especificada por su número de una serie en función del identificador proporcionado # noqa: E501
@@ -99,19 +91,57 @@ def add_episodio(id_contenido, numero_temporada, get_temporadas200_response_inne
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    numero = connexion.request.form['numero']
-    titulo = connexion.request.form['titulo']
-    duracion = connexion.request.form['duracion']
-    
-    new_episodio = Episodios(numero_temporada, numero, titulo, duracion)
-    
-    db.session.add(new_episodio)
-    db.session.commit()
-    
-    return new_episodio.to_dict
+    try:
+        # Validar si la solicitud contiene datos JSON válidos
+        if not connexion.request.is_json:
+            return jsonify({"error": "Los datos enviados no están en formato JSON válido."}), 400
 
+        # Obtener los datos del episodio desde la solicitud JSON
+        data = connexion.request.get_json()
 
-def add_temporada(id_contenido, get_temporadas200_response_inner):  # noqa: E501
+        # Validar si la temporada existe y está relacionada con el contenido
+        temporada = Temporadas.query.filter_by(idcontenido=id_contenido, numerotemporada=numero_temporada).first()
+        if not temporada:
+            return jsonify({"error": "La temporada especificada no existe o no está relacionada con el contenido."}), 404
+
+        # Validar que los campos obligatorios estén presentes
+        campos_requeridos = ['numero', 'titulo', 'duracion']
+        for campo in campos_requeridos:
+            if campo not in data:
+                return jsonify({'error': f'Falta el campo {campo} en la solicitud'}), 400
+
+        # Extraer datos del JSON
+        numero = data['numero']
+        titulo = data['titulo']
+        duracion = data['duracion']
+
+        # Verificar si ya existe un episodio con el mismo número en esta temporada
+        if Episodios.query.filter_by(numeroepisodio=numero, idtemporada=temporada.idtemporada).first():
+            return jsonify({"error": "Ya existe un episodio con este número para esta temporada."}), 400
+
+        # Crear el nuevo episodio
+        new_episodio = Episodios(
+            idtemporada=temporada.idtemporada,
+            numeroepisodio=numero,
+            tituloepisodio=titulo,
+            duracionepisodio=duracion
+        )
+
+        # Agregar y guardar en la base de datos
+        db.session.add(new_episodio)
+        db.session.commit()
+
+        # Devolver la respuesta en formato JSON
+        return jsonify(new_episodio.to_dict()), 201
+    except KeyError as e:
+        # Manejar errores si faltan campos en la solicitud JSON
+        return jsonify({'error': f'Falta el campo {e} en la solicitud'}), 400
+    except Exception as e:
+        # Manejar otros errores
+        return jsonify({'error': str(e)}), 500
+    
+
+def add_temporada(id_contenido):  # noqa: E501
     """Añadir una nueva temporada a una serie por su ID
 
     Añade una nueva temporada a una serie en función del identificador proporcionado # noqa: E501
@@ -123,14 +153,40 @@ def add_temporada(id_contenido, get_temporadas200_response_inner):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    numero = connexion.request.form['numero']
+    # Obtener el número de temporada desde el JSON de la solicitud
+    temporada = connexion.request.json.get('Temporada')
+   
+    # Validar que el contenido existe
+    contenido = Contenidos.query.get_or_404(id_contenido)
     
-    new_temporada = Temporadas(id_contenido, numero)
+    # Verificar que el contenido es una serie
+    if contenido.tipo != 'serie':
+        return jsonify({"error": "El contenido no es una serie."}), 400
+
+    # Validar que el número de temporada esté presente y sea un entero
+    if not temporada or not isinstance(temporada, int):
+        return jsonify({"error": "El campo 'Temporada' es obligatorio y debe ser un número entero válido."}), 400
+
+    # Verificar si ya existe una temporada con el mismo número para este contenido
+    if db.session.query(Temporadas).filter_by(idcontenido=id_contenido, numerotemporada=temporada).first():
+        return jsonify({"error": "Ya existe esta temporada con este número para este contenido."}), 400
+
+    try:
+        # Crear la nueva temporada
+        new_temporada = Temporadas(idcontenido=id_contenido, numerotemporada=temporada)
+        
+        # Agregar la temporada a la base de datos
+        db.session.add(new_temporada)
+        db.session.commit()
+
+        # Respuesta exitosa
+        return jsonify({"message": "Temporada añadida exitosamente"}), 201
     
-    db.session.add(new_temporada)
-    db.session.commit()
-    
-    return new_temporada.to_dict
+    except Exception as e:
+        # Manejo de errores, asegurando que si algo falla se revierte la transacción
+        db.session.rollback()
+        return jsonify({"error": f"Error al crear la temporada: {str(e)}"}), 500
+
 
 
 def delete_contenido(id_contenido):  # noqa: E501
@@ -276,9 +332,8 @@ def get_episodio(id_contenido, numero_temporada, numero_episodio):  # noqa: E501
     
     episodio = Episodios.query.filter_by(numeroepisodio=numero_episodio, idtemporada=temporada.idtemporada).first()
     
-    episodio = episodio.to_dict()
 
-    return episodio
+    return episodio.to_dict()
 
 
 def get_episodios(id_contenido, numero_temporada):  # noqa: E501
@@ -331,16 +386,14 @@ def update_contenido(id_contenido):  # noqa: E501
     :rtype: Union[Contenido, Tuple[Contenido, int], Tuple[Contenido, int, Dict[str, str]]
     """
     try:
-        # Convertir id_contenido a entero (esto asegura que el parámetro sea un número válido)
-        id_contenido = int(id_contenido)
-
+        
         # Obtener los datos de la solicitud JSON
         data = connexion.request.get_json()
         if not data:
             return {"error": "No data provided"}, 400  # Código 400: No se proporcionaron datos
         
         # Buscar el contenido por ID
-        cont = Contenidos.query.get_or_404(id_contenido)
+        cont = db.session.query(Contenidos).get(id_contenido)
 
         # Actualizar solo los campos que fueron enviados en el cuerpo de la solicitud
         if 'titulo' in data:
@@ -361,6 +414,11 @@ def update_contenido(id_contenido):  # noqa: E501
             cont.imagen = data['imagen']
 
         # Guardar los cambios en la base de datos
+        # Eliminar el contenido de la sesión actual si estaba en otra sesión
+        db.session.expunge(cont)
+        
+        # Eliminar el contenido de la base de datos
+        db.session.add(cont)
         db.session.commit()
         # Retornar el contenido actualizado como diccionario
         return cont.to_dict(), 200  # Código 200: Contenido actualizado exitosamente
