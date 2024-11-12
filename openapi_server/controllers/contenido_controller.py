@@ -13,14 +13,6 @@ def import_db_controller(database):
     global db
     db = database
 
-''' Funciones de los diferentes tipos de contenidos '''
-
-def  contenido_Serie():
-    
-    
-    
-    return "IS MAGIX"
-
 
 def add_contenido():  # noqa: E501
     """Añadir un nuevo contenido a la aplicación
@@ -85,7 +77,7 @@ def add_contenido():  # noqa: E501
         return {"error": f"An error occurred: {str(e)}"}, 500  # Código 500: Error del servidor
 
 
-def add_episodio(id_contenido, numero_temporada, get_temporadas200_response_inner_episodios_inner):  # noqa: E501
+def add_episodio(id_contenido, numero_temporada):  # noqa: E501
     """Añadir un nuevo episodio a una determinada temporada de una serie por su ID
 
     Añade un nuevo episodio a la temporada especificada por su número de una serie en función del identificador proporcionado # noqa: E501
@@ -99,19 +91,32 @@ def add_episodio(id_contenido, numero_temporada, get_temporadas200_response_inne
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    numero = connexion.request.form['numero']
-    titulo = connexion.request.form['titulo']
-    duracion = connexion.request.form['duracion']
-    
-    new_episodio = Episodios(numero_temporada, numero, titulo, duracion)
-    
-    db.session.add(new_episodio)
-    db.session.commit()
-    
-    return new_episodio.to_dict
+    try:
+        # Obtener los datos del episodio desde la solicitud JSON
+        data = connexion.request.get_json()
+        numero = data['numero']
+        titulo = data['titulo']
+        duracion = data['duracion']
 
+        # Crear el nuevo episodio
+        new_episodio = Episodios(idtemporada = numero_temporada, numeroepisodio=numero, tituloepisodio=titulo,duracionepisodio=duracion)
 
-def add_temporada(id_contenido, get_temporadas200_response_inner):  # noqa: E501
+        # Agregar y guardar en la base de datos
+        db.session.add(new_episodio)
+        db.session.commit()
+
+        # Devolver la respuesta en formato JSON
+        return jsonify(new_episodio.to_dict()), 201
+
+    except KeyError as e:
+        # Manejar errores si faltan campos en la solicitud JSON
+        return jsonify({'error': f'Falta el campo {e} en la solicitud'}), 400
+    except Exception as e:
+        # Manejar otros errores
+        return jsonify({'error': str(e)}), 500
+    
+
+def add_temporada(id_contenido):  # noqa: E501
     """Añadir una nueva temporada a una serie por su ID
 
     Añade una nueva temporada a una serie en función del identificador proporcionado # noqa: E501
@@ -123,14 +128,23 @@ def add_temporada(id_contenido, get_temporadas200_response_inner):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    numero = connexion.request.form['numero']
+    id_contenido = int(id_contenido)
+    # Obtener el número de temporada del JSON de la solicitud
+    temporada = connexion.request.json.get('Temporada')
     
-    new_temporada = Temporadas(id_contenido, numero)
-    
-    db.session.add(new_temporada)
-    db.session.commit()
-    
-    return new_temporada.to_dict
+    # Validar que el número esté presente
+    if not temporada:
+        return jsonify({"error": "El campo 'Temporada' es obligatorio"}), 400
+
+    # Crear la nueva temporada
+    try:
+        new_temporada = Temporadas( idcontenido=id_contenido, numerotemporada=temporada)
+        db.session.add(new_temporada)
+        db.session.commit()
+    except Exception as e:
+        return jsonify({"error": f"Error al crear la temporada: {str(e)}"}), 500
+    # Añadir la temporada a la base de datos
+
 
 
 def delete_contenido(id_contenido):  # noqa: E501
