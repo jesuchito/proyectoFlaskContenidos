@@ -8,7 +8,10 @@ from openapi_server.models.contenido import import_db_cont
 from openapi_server.models.episodios import import_db_ep
 from openapi_server.models.temporadas import import_db_temp
 
+from flask_cors import CORS
+
 app = connexion.App(__name__, specification_dir='./openapi/')
+CORS(app.app)
 app.app.json_encoder = encoder.JSONEncoder
 app.add_api('openapi.yaml',
             arguments={'title': 'Microservicio de Contenidos de una aplicación de tipo Netflix'},
