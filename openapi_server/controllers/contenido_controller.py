@@ -290,9 +290,8 @@ def get_episodio(id_contenido, numero_temporada, numero_episodio):  # noqa: E501
     
     episodio = Episodios.query.filter_by(numeroepisodio=numero_episodio, idtemporada=temporada.idtemporada).first()
     
-    episodio = episodio.to_dict()
 
-    return episodio
+    return episodio.to_dict()
 
 
 def get_episodios(id_contenido, numero_temporada):  # noqa: E501
@@ -354,7 +353,7 @@ def update_contenido(id_contenido):  # noqa: E501
             return {"error": "No data provided"}, 400  # Código 400: No se proporcionaron datos
         
         # Buscar el contenido por ID
-        cont = Contenidos.query.get_or_404(id_contenido)
+        cont = db.session.query(Contenidos).get(id_contenido)
 
         # Actualizar solo los campos que fueron enviados en el cuerpo de la solicitud
         if 'titulo' in data:
@@ -375,6 +374,11 @@ def update_contenido(id_contenido):  # noqa: E501
             cont.imagen = data['imagen']
 
         # Guardar los cambios en la base de datos
+        # Eliminar el contenido de la sesión actual si estaba en otra sesión
+        db.session.expunge(cont)
+        
+        # Eliminar el contenido de la base de datos
+        db.session.add(cont)
         db.session.commit()
         # Retornar el contenido actualizado como diccionario
         return cont.to_dict(), 200  # Código 200: Contenido actualizado exitosamente
