@@ -17,7 +17,7 @@ app.add_api('openapi.yaml',
             arguments={'title': 'Microservicio de Contenidos de una aplicación de tipo Netflix'},
             pythonic_params=True)
 
-app.app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:12345@localhost:5433/Contenidos'
+app.app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:12345@localhost:5432/Contenidos'
 app.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app.app)
