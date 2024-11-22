@@ -29,14 +29,9 @@ jobs:
       - name: Install Newman (Postman CLI)
         run: npm install -g newman
 
-      - name: Build Docker image
+      - name: Build Docker image e container bd 
         run: |
-          docker build -t openapi-server .
-
-      - name: Run Docker container in the background
-        run: |
-          docker run -d -p 8080:8080 openapi-server
-
+          docker docker-compose up --build  
       - name: Wait for server to start
         run: |
           sleep 10
