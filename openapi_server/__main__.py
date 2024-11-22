@@ -29,8 +29,8 @@ app.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
     'pool_size': 350,        # Tamaño máximo de conexiones en el pool
     'pool_timeout': 30,     # Tiempo máximo de espera para obtener una conexión
-    'pool_recycle': 180,   # Tiempo máximo de vida de una conexión (en segundos)
-    'max_overflow': 5       # Conexiones extra que pueden crearse si se alcanza el pool_size
+    'pool_recycle': 30,   # Tiempo máximo de vida de una conexión (en segundos)
+    'max_overflow': 20       # Conexiones extra que pueden crearse si se alcanza el pool_size
 }
 
 db = SQLAlchemy(app.app)
