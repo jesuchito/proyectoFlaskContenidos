@@ -29,9 +29,10 @@ jobs:
       - name: Install Newman (Postman CLI)
         run: npm install -g newman
 
-      - name: Build Docker image e container bd 
+      - name: Build Docker image y contenedor de base de datos
         run: |
-          docker docker-compose up --build  
+          docker-compose up --build 
+
       - name: Wait for server to start
         run: |
           sleep 10
