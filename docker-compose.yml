@@ -4,9 +4,9 @@ services:
     image: postgres:latest
     container_name: api_Contenidos
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 12345
-      POSTGRES_DB: Contenidos
+      POSTGRES_USER: api_user
+      POSTGRES_PASSWORD: api_password
+      POSTGRES_DB: api_database
     ports:
       - "5434:5434"
     volumes:
