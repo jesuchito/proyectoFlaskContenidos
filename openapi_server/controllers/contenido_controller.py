@@ -100,7 +100,7 @@ def add_episodio(id_contenido, numero_temporada):  # noqa: E501
         data = connexion.request.get_json()
 
         # Validar si la temporada existe y está relacionada con el contenido
-        temporada = Temporadas.query.filter_by(idcontenido=id_contenido, numerotemporada=numero_temporada).first()
+        temporada =  db.session.query(Temporadas).filter_by(idcontenido=id_contenido, numerotemporada=numero_temporada).first()
         if not temporada:
             return jsonify({"error": "La temporada especificada no existe o no está relacionada con el contenido."}), 404
 
@@ -116,7 +116,7 @@ def add_episodio(id_contenido, numero_temporada):  # noqa: E501
         duracion = data['duracion']
 
         # Verificar si ya existe un episodio con el mismo número en esta temporada
-        if Episodios.query.filter_by(numeroepisodio=numero, idtemporada=temporada.idtemporada).first():
+        if db.session.query(Episodios).filter_by(numeroepisodio=numero, idtemporada=temporada.idtemporada).first():
             return jsonify({"error": "Ya existe un episodio con este número para esta temporada."}), 400
 
         # Crear el nuevo episodio
@@ -157,7 +157,7 @@ def add_temporada(id_contenido):  # noqa: E501
     temporada = connexion.request.json.get('Temporada')
    
     # Validar que el contenido existe
-    contenido = Contenidos.query.get_or_404(id_contenido)
+    contenido = db.session.query(Contenidos).get(id_contenido)
     
     # Verificar que el contenido es una serie
     if contenido.tipo != 'serie':
@@ -239,7 +239,7 @@ def get_all_contenido():  # noqa: E501
     :rtype: Union[List[Contenido], Tuple[List[Contenido], int], Tuple[List[Contenido], int, Dict[str, str]]
     """
     
-    contenidos = Contenidos.query.all()
+    contenidos = db.session.query(Contenidos)
     print(contenidos)
     contenidos_dict = [contenido.to_dict() for contenido in contenidos]
 
@@ -256,7 +256,7 @@ def get_contenido_by_id(id_contenido):  # noqa: E501
 
     :rtype: Union[Contenido, Tuple[Contenido, int], Tuple[Contenido, int, Dict[str, str]]
     """
-    contenido = Contenidos.query.get_or_404(id_contenido)
+    contenido = db.session.query(Contenidos).get(id_contenido)
     print(contenido)
     contenido = contenido.to_dict()
 
@@ -273,7 +273,7 @@ def get_contenidos_by_genero(genero):  # noqa: E501
 
     :rtype: Union[List[Contenido], Tuple[List[Contenido], int], Tuple[List[Contenido], int, Dict[str, str]]
     """
-    contenidos = Contenidos.query.filter_by(genero=genero).all()
+    contenidos = db.session.query(Contenidos).filter_by(genero=genero).all()
     print(contenidos)
     contenidos_dict = [contenido.to_dict() for contenido in contenidos]
 
@@ -290,7 +290,8 @@ def get_contenidos_by_tipo(tipo):  # noqa: E501
 
     :rtype: Union[List[Contenido], Tuple[List[Contenido], int], Tuple[List[Contenido], int, Dict[str, str]]
     """
-    contenidos = Contenidos.query.filter_by(tipo=tipo).all()
+    contenidos =  db.session.query(Contenidos).filter_by(tipo=tipo).all()
+    
     print(contenidos)
     contenidos_dict = [contenido.to_dict() for contenido in contenidos]
 
@@ -307,7 +308,7 @@ def get_contenidos_by_titulo(titulo):  # noqa: E501
 
     :rtype: Union[List[Contenido], Tuple[List[Contenido], int], Tuple[List[Contenido], int, Dict[str, str]]
     """
-    contenidos = Contenidos.query.filter_by(titulo=titulo).all()
+    contenidos = db.session.query(Contenidos).filter_by(titulo=titulo).all()
     print(contenidos)
     contenidos_dict = [contenido.to_dict() for contenido in contenidos]
     
@@ -328,9 +329,9 @@ def get_episodio(id_contenido, numero_temporada, numero_episodio):  # noqa: E501
 
     :rtype: Union[GetTemporadas200ResponseInnerEpisodiosInner, Tuple[GetTemporadas200ResponseInnerEpisodiosInner, int], Tuple[GetTemporadas200ResponseInnerEpisodiosInner, int, Dict[str, str]]
     """
-    temporada = Temporadas.query.filter_by(numerotemporada=numero_temporada, idcontenido=id_contenido).first()
+    temporada =  db.session.query(Temporadas).filter_by(numerotemporada=numero_temporada, idcontenido=id_contenido).first()
     
-    episodio = Episodios.query.filter_by(numeroepisodio=numero_episodio, idtemporada=temporada.idtemporada).first()
+    episodio = db.session.query(Episodios).filter_by(numeroepisodio=numero_episodio, idtemporada=temporada.idtemporada).first()
     
 
     return episodio.to_dict()
@@ -348,9 +349,9 @@ def get_episodios(id_contenido, numero_temporada):  # noqa: E501
 
     :rtype: Union[List[GetTemporadas200ResponseInnerEpisodiosInner], Tuple[List[GetTemporadas200ResponseInnerEpisodiosInner], int], Tuple[List[GetTemporadas200ResponseInnerEpisodiosInner], int, Dict[str, str]]
     """
-    temporada = Temporadas.query.filter_by(numerotemporada=numero_temporada, idcontenido=id_contenido).first()
+    temporada = db.session.query(Temporadas).filter_by(numerotemporada=numero_temporada, idcontenido=id_contenido).first()
 
-    episodios = Episodios.query.filter_by(idtemporada = temporada.idtemporada).all()
+    episodios = db.session.query(Episodios).filter_by(idtemporada = temporada.idtemporada).all()
     
     episodios_dict = [episodio.to_dict() for episodio in episodios]
     
@@ -366,7 +367,7 @@ def get_temporadas(id_contenido):  # noqa: E501
 
     :rtype: Union[List[GetTemporadas200ResponseInner], Tuple[List[GetTemporadas200ResponseInner], int], Tuple[List[GetTemporadas200ResponseInner], int, Dict[str, str]]
     """
-    temporadas = Temporadas.query.filter_by(idcontenido=id_contenido).all()
+    temporadas = db.session.query(Temporadas).filter_by(idcontenido=id_contenido).all()
     
     temporadas_dict = [temporada.to_dict() for temporada in temporadas]
     
