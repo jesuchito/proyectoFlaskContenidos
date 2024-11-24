@@ -34,6 +34,7 @@ jobs:
           sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
           docker-compose --version  # Verifica que Docker Compose se haya instalado correctamente
+          docker network create flask_network
 
       - name: Build Docker image y contenedor de base de datos
         run: |
