@@ -108,7 +108,7 @@ La definición de OpenAPI está disponible en formato JSON en:
 http://localhost:8080/openapi.json
 ```
 
-## Despligue en Docker 
+## Despliegue en Docker 
 
 Para desplegar la API en un contenedor Docker , Ejecute el siguiente comando 
 ```bash
