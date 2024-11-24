@@ -58,14 +58,13 @@ El objetivo principal de esta API es garantizar una entrega eficiente y escalabl
 
 - **El desarrollo se realizó en **Python**, utilizando el framework **Flask** para construir la API. Flask es ligero, fácil de usar y perfecto para construir microservicios.
 
-Se utilizaron las siguientes librerías:
-- **Flask-SQLAlchemy**: Para la integración con la base de datos PostgreSQL, gestionando las operaciones CRUD.
-- **Flask-CORS**: Para habilitar el soporte de CORS, permitiendo que la API sea accesible desde diferentes dominios.
-
 - ****Docker** se utilizó para crear contenedores tanto para la API como para la base de datos, permitiendo simular un entorno de despliegue real. Esto garantizó que la API funcionara correctamente tanto en desarrollo como en pruebas, aislando el entorno de ejecución.
 
 - **Se utilizó una **arquitectura modular**, separando el código en diferentes paquetes y clases. Esto permitió un orden claro y mantenible en el código. La separación en paquetes facilita el desarrollo y la extensión del sistema sin que otras partes se vean afectadas, favoreciendo la escalabilidad del proyecto.
 
+- **Se utilizaron las siguientes librerías:
+Flask-SQLAlchemy**: Para la integración con la base de datos PostgreSQL, gestionando las operaciones CRUD.
+Flask-CORS**: Para habilitar el soporte de CORS, permitiendo que la API sea accesible desde diferentes dominios.
 
 
 ## Requisitos de la API
