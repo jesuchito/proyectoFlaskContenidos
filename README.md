@@ -56,7 +56,7 @@ El objetivo principal de esta API es garantizar una entrega eficiente y escalabl
 
 - **OpenAPI Generator** se empleó para generar el esqueleto del código de la API, lo que permitió comenzar rápidamente con una estructura base para los endpoints definidos en el archivo Swagger.
 
-- **El desarrollo se realizó en **Python**, utilizando el framework **Flask** para construir la API. Flask es ligero, fácil de usar y perfecto para construir microservicios.
+- El desarrollo se realizó en **Python**, utilizando el framework **Flask** para construir la API. Flask es ligero, fácil de usar y perfecto para construir microservicios.
 
 - **Docker** se utilizó para crear contenedores tanto para la API como para la base de datos, permitiendo simular un entorno de despliegue real. Esto garantizó que la API funcionara correctamente tanto en desarrollo como en pruebas, aislando el entorno de ejecución.
 
@@ -64,9 +64,9 @@ El objetivo principal de esta API es garantizar una entrega eficiente y escalabl
 
 - Se utilizaron las siguientes librerías:
 
-    Flask-SQLAlchemy**: Para la integración con la base de datos PostgreSQL, gestionando las operaciones CRUD.
+    Flask-SQLAlchem: Para la integración con la base de datos PostgreSQL, gestionando las operaciones CRUD.
 
-    Flask-CORS**: Para habilitar el soporte de CORS, permitiendo que la API sea accesible desde diferentes dominios.
+    Flask-CORS: Para habilitar el soporte de CORS, permitiendo que la API sea accesible desde diferentes dominios.
 
 
 ## Requisitos de la API
@@ -82,7 +82,7 @@ Python 3.5.2+
 2. Configuración del entorno
  * Asegúrate de tener PostgreSQL corriendo y configurado en tu entorno local o usa un servicio en la nube .
  * Nombra tu base de datos como Contenidos 
- * Para inicializar las tablas la base de datos y el contenido de esta, asegúrate de ejecutar las queries definidas en el archivo Init.sql para crear las tablas y estructuras necesaria
+ * Para inicializar las tablas la base de datos y el contenido de esta, asegúrate de ejecutar las query definidas en el archivo Init.sql para crear las tablas y estructuras necesaria
 
 3. Para ejecutar la Api Contenidos , ejecute lo siguiente desde el directorio raíz
  * Instale los requerimientos 
@@ -108,7 +108,7 @@ La definición de OpenAPI está disponible en formato JSON en:
 http://localhost:8080/openapi.json
 ```
 
-## Desligue en Docker 
+## Despligue en Docker 
 
 Para desplegar la API en un contenedor Docker , Ejecute el siguiente comando 
 ```bash
