@@ -1,8 +1,10 @@
 version: '3.8'
+
 services:
-  db:
+
+  db_contenidos:
     image: postgres:latest
-    container_name: api_Contenidos
+    container_name: api_contenidos
     environment:
       POSTGRES_USER: api_user
       POSTGRES_PASSWORD: api_password
@@ -10,16 +12,25 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data_contenidos:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - flask_network  # Conectar a la red compartida
 
-  api:
+  api_contenidos:
     build:
-      context: .
+      context: . # Ruta a tu directorio de API de contenidos
     ports:
       - "8080:8080"
     depends_on:
-      - db
+      - db_contenidos
+    networks:
+      - flask_network  # Conectar a la misma red compartida
 
 volumes:
-  db_data:
+  db_data_contenidos:
+
+networks:
+  flask_network: # Usando la red compartida
+    external: true # Hace referencia a una red externa creada anteriorment
+
