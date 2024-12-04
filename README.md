@@ -2,12 +2,49 @@
 
 <img width="668" alt="image" src="https://github.com/user-attachments/assets/d68f6a52-cda4-4a7c-b3e1-677decdb2fa7">
 
+<img width="668" alt="image" src="https://github.com/user-attachments/assets/d68f6a52-cda4-4a7c-b3e1-677decdb2fa7">
+
 ## Descripción General
 
 La API de contenidos es una interfaz que permite la gestión y acceso a los contenidos multimedia disponibles en la plataforma de tipo Netflix. A través de esta API, los usuarios pueden interactuar con una amplia variedad de contenido, incluyendo películas, series, documentales y otros formatos, permitiéndoles consumir estos elementos dentro de la aplicación.
 
 El objetivo principal de esta API es garantizar una entrega eficiente y escalable de contenido a los usuarios, mientras mantiene la flexibilidad necesaria para adaptarse a nuevas funcionalidades o cambios en los requerimientos de negocio.
 
+##  Endpoints de la API
+
+
+- **Obtener lista de contenidos**  
+  `GET /contenido`: Recupera todos los contenidos multimedia.
+
+- **Añadir nuevo contenido**  
+  `POST /contenido`: Crea un nuevo contenido multimedia.
+
+- **Buscar por género**  
+  `GET /contenido/findByGenero/{genero}`: Filtra contenidos por género.
+
+- **Buscar por tipo**  
+  `GET /contenido/findByTipo/{tipo}`: Filtra contenidos por tipo (serie, película, etc.).
+
+- **Buscar por título**  
+  `GET /contenido/findByTitulo/{titulo}`: Busca contenidos por título.
+
+- **Obtener contenido por ID**  
+  `GET /contenido/{idContenido}`: Obtiene un contenido específico por ID.
+
+- **Actualizar contenido**  
+  `PUT /contenido/{idContenido}`: Actualiza un contenido por ID.
+
+- **Eliminar contenido**  
+  `DELETE /contenido/{idContenido}`: Elimina un contenido por ID.
+
+- **Obtener temporadas de una serie**  
+  `GET /contenido/{idContenido}/Temporadas`: Lista las temporadas de una serie.
+
+- **Añadir temporada a una serie**  
+  `POST /contenido/{idContenido}/Temporadas`: Añade una temporada a una serie.
+
+- **Obtener episodios de una temporada**  
+  `GET /contenido/{idContenido}/{numeroTemporada}/ListaEpisodios`: Lista los episodios de una temporada.
 ##  Endpoints de la API
 
 
@@ -76,6 +113,8 @@ Python 3.5.2+
 
 ### Despliegue en Directorio 
 
+### Despliegue en Directorio 
+
 1. Instalación:
  * Asegúrate de tener Python 3.5.2 o superior instalado en tu máquina.
 
@@ -97,20 +136,69 @@ Python 3.5.2+
  * La Api debe estarse  ejecutando 
 
 4. Definición de OpenAPI
+ * La Api debe estarse  ejecutando 
 
+4. Definición de OpenAPI
+
+Abre tu navegador y accede a la siguiente URL para ver la interfaz de usuario de la API:
 Abre tu navegador y accede a la siguiente URL para ver la interfaz de usuario de la API:
 ```
 http://localhost:8080/ui/
 ```
 
 La definición de OpenAPI está disponible en formato JSON en:
+La definición de OpenAPI está disponible en formato JSON en:
 ```
 http://localhost:8080/openapi.json
 ```
 
+<<<<<<< HEAD
+## Despliegue en Docker 
+=======
+>>>>>>> e68888314e2c7421e11d3afbabcab98b9d51572c
+
 ## Despliegue en Docker 
 
-Para desplegar la API en un contenedor Docker , Ejecute el siguiente comando 
+Este documento describe los pasos necesarios para desplegar una API dentro de un contenedor Docker utilizando `docker-compose`.
+
+---
+
+### Requisitos previos
+
+1. **Docker**: Asegúrate de tener instalado Docker en tu sistema. Puedes descargarlo desde [Docker](https://www.docker.com/).
+2. **docker-compose**: Comprueba que tienes instalado `docker-compose`. Si no, sigue las instrucciones de instalación [aquí](https://docs.docker.com/compose/install/).
+
+---
+
+### Pasos para el despliegue
+
+### Paso 1: Crear una red en Docker
+
+Antes de desplegar la API, necesitas crear una red específica para el proyecto. Esto permitirá que los contenedores se comuniquen entre sí.
+
+Ejecuta el siguiente comando en la terminal:
+
 ```bash
-# Construir e iniciar la imagen y el contenedor
+docker network create flask_network
+```
+
+### Paso 2: Construir e iniciar la API
+
+Para construir la imagen de Docker y poner en marcha los contenedores, sigue los pasos a continuación:
+
+Desde el directorio donde se encuentra el archivo `docker-compose.yml`, ejecuta el siguiente comando para construir las imágenes y levantar los contenedores:
+
+```bash
 docker-compose up --build
+```
+
+### Paso 3. Verificar el despliegue
+Una vez que los contenedores estén en funcionamiento, puedes verificar el estado de los servicios con el siguiente comando:
+
+```bash
+docker ps
+```
+
+## ¡Todo listo! 🚀
+
+Tu API ahora está en funcionamiento dentro de un contenedor Docker, junto con su base de datos y otros servicios asociados.
