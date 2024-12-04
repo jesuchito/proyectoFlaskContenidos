@@ -31,7 +31,7 @@ def add_contenido():  # noqa: E501
             return {"error": "No data provided"}, 400  # Código 400: No se proporcionaron datos
     
     # Verificar que todos los campos requeridos están presentes
-        required_fields = ['titulo', 'tipo', 'sinopsis', 'duracion', 'genero', 'director', 'elenco']
+        required_fields = ['titulo', 'tipo', 'sinopsis', 'duracion', 'genero', 'director', 'elenco', 'imagen']
         for field in required_fields:
             if field not in data:
                 return {"error": f"Missing field: {field}"}, 422  # Código 422: Falta un campo requerido
@@ -53,6 +53,7 @@ def add_contenido():  # noqa: E501
         genero = data['genero']
         director = data['director']
         elenco = data['elenco']
+        imagen = data['imagen']
 
         # Crear el nuevo contenido
         new_contenido = Contenidos(
@@ -63,6 +64,7 @@ def add_contenido():  # noqa: E501
             genero=genero, 
             director=director, 
             elenco=elenco,
+            imagen= imagen,
             )
 
     # Guardar el contenido en la base de datos
