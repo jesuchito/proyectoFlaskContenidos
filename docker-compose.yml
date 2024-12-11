@@ -1,9 +1,8 @@
-version: '3.8'
 
 services:
 
   db_contenidos:
-    image: postgres:latest
+    image: postgres:17
     container_name: api_contenidos
     environment:
       POSTGRES_USER: api_user
